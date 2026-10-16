@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hungarian A1 & A2 Vocabulary Quiz</title>
+<style>
+:root {
+--primary-color: #ff7a45;
+--secondary-color: #ffa940;
+--background-color: #121212;
+--card-background: #1e1e1e;
+--text-color: #e0e0e0;
+--text-muted: #a0a0a0;
+--border-color: #333333;
+--success-color: #73d13d;
+--error-color: #ff4d4f;
+}
+
+body {
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+background-color: var(--background-color);
+color: var(--text-color);
+margin: 0;
+padding: 20px;
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+}
+
+.container {
+background-color: var(--card-background);
+border-radius: 12px;
+box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+width: 100%;
+max-width: 600px;
+padding: 30px;
+box-sizing: border-box;
+border: 1px solid var(--border-color);
+}
+
+h1 {
+color: var(--primary-color);
+text-align: center;
+margin-top: 0;
+font-size: 24px;
+}
+
+p.subtitle {
+text-align: center;
+color: var(--text-muted);
+margin-bottom: 25px;
+font-size: 14px;
+}
+
+.quiz-section {
+display: none;
+}
+
+.quiz-section.active {
+display: block;
+}
+
+.question-number {
+font-size: 13px;
+font-weight: 600;
+color: var(--secondary-color);
+text-transform: uppercase;
+letter-spacing: 0.5px;
+margin-bottom: 5px;
+}
+
+.question-text {
+font-size: 18px;
+font-weight: 600;
+margin-bottom: 20px;
+line-height: 1.5;
+}
+
+.input-group {
+margin-bottom: 20px;
+}
+
+input[type="text"] {
+width: 100%;
+padding: 12px 16px;
+background-color: #2a2a2a;
+border: 1px solid var(--border-color);
+border-radius: 8px;
+color: var(--text-color);
+font-size: 16px;
+box-sizing: border-box;
+transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus {
+outline: none;
+border-color: var(--primary-color);
+box-shadow: 0 0 0 3px rgba(255, 122, 69, 0.15);
+}
+
+input[type="text"].correct {
+background-color: rgba(115, 209, 61, 0.1);
+border-color: var(--success-color);
+color: #95de64;
+}
+
+input[type="text"].incorrect {
+background-color: rgba(255, 77, 79, 0.1);
+border-color: var(--error-color);
+color: #ff7875;
+}
+
+.feedback-text {
+font-size: 14px;
+margin-top: 8px;
+font-weight: 500;
+min-height: 20px;
+}
+
+.feedback-text.correct {
+color: var(--success-color);
+}
+
+.feedback-text.incorrect {
+color: var(--error-color);
+}
+
+.btn {
+background-color: var(--primary-color);
+color: white;
+border: none;
+border-radius: 8px;
+padding: 12px 20px;
+font-size: 16px;
+font-weight: 600;
+cursor: pointer;
+width: 100%;
+transition: background-color 0.2s;
+}
+
+.btn:hover {
+background-color: #f35627;
+}
+
+.btn:disabled {
+background-color: #333333;
+color: #666666;
+cursor: not-allowed;
+}
+
+.results-section {
+text-align: center;
+}
+
+.score-display {
+font-size: 48px;
+font-weight: bold;
+color: var(--primary-color);
+margin: 20px 0;
+}
+
+.score-message {
+font-size: 18px;
+margin-bottom: 25px;
+color: var(--text-color);
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>🇭🇺 Hungarian A1 & A2 Vocabulary Quiz</h1>
+<p class="subtitle">Test your foundational and intermediate Hungarian knowledge (40 questions)!</p>
+
+<!-- Quiz Container -->
+<div id="quiz-container">
+<div id="question-container"></div>
+<button id="next-btn" class="btn" onclick="handleButtonClick()" disabled>Check Answer</button>
+</div>
+
+<!-- Results Container -->
+<div id="results-container" class="quiz-section results-section">
+<h2>Quiz Complete!</h2>
+<div class="score-display" id="final-score">0/40</div>
+<p class="score-message" id="score-message">Great job practicing your Hungarian!</p>
+<button class="btn" onclick="restartQuiz()">Try Again</button>
+</div>
+</div>
+
+<script>
+const questions = [
+// --- A1 Questions (1 - 20) ---
+{
+question: "Translate into English: 'Jó napot!' means ___.",
+answer: ["good afternoon", "hello", "good afternoon / hello"],
+displayAnswer: "Good afternoon / Hello"
+},
+{
+question: "Translate into Hungarian: 'Thank you' is ___.",
+answer: ["köszönöm"],
+displayAnswer: "Köszönöm"
+},
+{
+question: "Translate into English: 'Víz' means ___.",
+answer: ["water"],
+displayAnswer: "Water"
+},
+{
+question: "Translate into English: 'Igen' means ___.",
+answer: ["yes"],
+displayAnswer: "Yes"
+},
+{
+question: "Translate into English: 'Kérem' means ___.",
+answer: ["please", "you're welcome", "please / you're welcome"],
+displayAnswer: "Please / You're welcome"
+},
+{
+question: "Translate into English: The number 'egy' means ___.",
+answer: ["one"],
+displayAnswer: "One"
+},
+{
+question: "Translate into English: 'Viszontlátásra' means ___.",
+answer: ["goodbye", "goodbye (formal)"],
+displayAnswer: "Goodbye (formal)"
+},
+{
+question: "Translate into Hungarian: 'Bread' is ___.",
+answer: ["kenyér"],
+displayAnswer: "Kenyér"
+},
+{
+question: "Translate into English: 'Nem' means ___.",
+answer: ["no"],
+displayAnswer: "No"
+},
+{
+question: "Translate into English: 'Beszél angolul?' means ___.",
+answer: ["do you speak english?"],
+displayAnswer: "Do you speak English?"
+},
+{
+question: "Translate into Hungarian: 'Good morning' is ___.",
+answer: ["jó reggelt", "jó reggelt kívánok"],
+displayAnswer: "Jó reggelt"
+},
+{
+question: "Translate into Hungarian: 'Milk' is ___.",
+answer: ["tej"],
+displayAnswer: "Tej"
+},
+{
+question: "Translate into Hungarian: 'Beer' is ___.",
+answer: ["sör"],
+displayAnswer: "Sör"
+},
+{
+question: "Translate into English: 'Jó éjszakát!' means ___.",
+answer: ["good night"],
+displayAnswer: "Good night"
+},
+{
+question: "Translate into English: 'Szia' means ___.",
+answer: ["hello", "hi", "bye", "goodbye"],
+displayAnswer: "Hello / Hi / Bye"
+},
+{
+question: "Translate into Hungarian: 'Apple' is ___.",
+answer: ["alma"],
+displayAnswer: "Alma"
+},
+{
+question: "Translate into Hungarian: 'Meat' is ___.",
+answer: ["hús"],
+displayAnswer: "Hús"
+},
+{
+question: "Translate into Hungarian: 'Cheese' is ___.",
+answer: ["sajt"],
+displayAnswer: "Sajt"
+},
+{
+question: "Translate into English: 'Elnézést' means ___.",
+answer: ["excuse me", "sorry"],
+displayAnswer: "Excuse me / Sorry"
+},
+{
+question: "Translate into English: 'Hogy van?' means ___.",
+answer: ["how are you?", "how are you"],
+displayAnswer: "How are you? (formal)"
+},
+
+// --- A2 Intermediate Questions (21 - 40) ---
+{
+question: "Translate into English: 'Hol van a vasútállomás?' means ___.",
+answer: ["where is the railway station?", "where is the train station?", "where is the railway station"],
+displayAnswer: "Where is the railway station / train station?"
+},
+{
+question: "Translate into Hungarian: 'I would like' (polite form) is ___.",
+answer: ["szeretnék"],
+displayAnswer: "Szeretnék"
+},
+{
+question: "Translate into English: 'Mennyibe kerül?' means ___.",
+answer: ["how much does it cost?", "how much is it?", "how much costs it?"],
+displayAnswer: "How much does it cost?"
+},
+{
+question: "Translate into Hungarian: 'Ticket' is ___.",
+answer: ["jegy"],
+displayAnswer: "Jegy"
+},
+{
+question: "Translate into English: 'Fáradt vagyok' means ___.",
+answer: ["i am tired", "im tired"],
+displayAnswer: "I am tired"
+},
+{
+question: "Translate into Hungarian: 'Yesterday' is ___.",
+answer: ["tegnap"],
+displayAnswer: "Tegnap"
+},
+{
+question: "Translate into Hungarian: 'Tomorrow' is ___.",
+answer: ["holnap"],
+displayAnswer: "Holnap"
+},
+{
+question: "Translate into English: 'Merre van a mosdó?' means ___.",
+answer: ["where is the restroom?", "where is the toilet?", "where is the bathroom?"],
+displayAnswer: "Where is the restroom / toilet?"
+},
+{
+question: "Translate into Hungarian: 'Expensive' is ___.",
+answer: ["drága"],
+displayAnswer: "Drága"
+},
+{
+question: "Translate into Hungarian: 'Cheap' is ___.",
+answer: ["olcsó"],
+displayAnswer: "Olcsó"
+},
+{
+question: "Translate into English: 'Nem értem' means ___.",
+answer: ["i don't understand", "i do not understand", "i dont understand"],
+displayAnswer: "I don't understand"
+},
+{
+question: "Translate into Hungarian: 'Weather' is ___.",
+answer: ["időjárás", "idő"],
+displayAnswer: "Időjárás / Idő"
+},
+{
+question: "Translate into English: 'Bocsánat, késem' means ___.",
+answer: ["sorry, i am late", "sorry, im late", "pardon, i am late"],
+displayAnswer: "Sorry, I am late"
+},
+{
+question: "Translate into Hungarian: 'Hospital' is ___.",
+answer: ["kórház"],
+displayAnswer: "Kórház"
+},
+{
+question: "Translate into English: 'A számlát kérem' means ___.",
+answer: ["the bill please", "check please", "the check please"],
+displayAnswer: "The bill, please"
+},
+{
+question: "Translate into Hungarian: 'Airport' is ___.",
+answer: ["repülőtér", "reptér"],
+displayAnswer: "Repülőtér / Reptér"
+},
+{
+question: "Translate into English: 'Merre lakik?' means ___.",
+answer: ["where do you live?", "where live you?"],
+displayAnswer: "Where do you live? (formal)"
+},
+{
+question: "Translate into Hungarian: 'Doctor' is ___.",
+answer: ["orvos"],
+displayAnswer: "Orvos"
+},
+{
+question: "Translate into English: 'Esik az eső' means ___.",
+answer: ["it is raining", "it rains", "its raining"],
+displayAnswer: "It is raining"
+},
+{
+question: "Translate into Hungarian: 'Always' is ___.",
+answer: ["mindig"],
+displayAnswer: "Mindig"
+}
+];
+
+let currentQuestionIndex = 0;
+let score = 0;
+let isAnswered = false;
+
+const questionContainer = document.getElementById('question-container');
+const nextBtn = document.getElementById('next-btn');
+const quizContainer = document.getElementById('quiz-container');
+const resultsContainer = document.getElementById('results-container');
+const finalScore = document.getElementById('final-score');
+const scoreMessage = document.getElementById('score-message');
+
+function loadQuestion() {
+isAnswered = false;
+nextBtn.disabled = true;
+nextBtn.innerText = "Check Answer";
+
+const currentQ = questions[currentQuestionIndex];
+
+questionContainer.innerHTML = `
+<div class="question-number">Question ${currentQuestionIndex + 1} of ${questions.length}</div>
+<div class="question-text">${currentQ.question}</div>
+<div class="input-group">
+<input type="text" id="user-input" placeholder="Type your answer here..." autocomplete="off" oninput="onTyping()" onkeydown="checkEnter(event)">
+<div id="feedback" class="feedback-text"></div>
+</div>
+`;
+
+document.getElementById('user-input').focus();
+}
+
+function onTyping() {
+const inputVal = document.getElementById('user-input').value.trim();
+if (!isAnswered) {
+nextBtn.disabled = inputVal === "";
+}
+}
+
+function checkEnter(event) {
+if (event.key === "Enter") {
+if (!isAnswered && document.getElementById('user-input').value.trim() !== "") {
+handleButtonClick();
+} else if (isAnswered) {
+handleButtonClick();
+}
+}
+}
+
+function handleButtonClick() {
+if (!isAnswered) {
+checkAnswer();
+} else {
+nextQuestion();
+}
+}
+
+function checkAnswer() {
+const userInputEl = document.getElementById('user-input');
+const feedbackEl = document.getElementById('feedback');
+const userVal = userInputEl.value.trim().toLowerCase();
+const currentQ = questions[currentQuestionIndex];
+
+isAnswered = true;
+userInputEl.disabled = true;
+
+const isCorrect = currentQ.answer.some(ans => userVal === ans.toLowerCase());
+
+if (isCorrect) {
+userInputEl.classList.add('correct');
+feedbackEl.classList.add('correct');
+feedbackEl.innerText = "Correct! 🎉";
+score++;
+} else {
+userInputEl.classList.add('incorrect');
+feedbackEl.classList.add('incorrect');
+feedbackEl.innerText = `Incorrect. Correct answer: ${currentQ.displayAnswer}`;
+}
+
+if (currentQuestionIndex === questions.length - 1) {
+nextBtn.innerText = "View Results";
+} else {
+nextBtn.innerText = "Next Question";
+}
+nextBtn.disabled = false;
+}
+
+function nextQuestion() {
+currentQuestionIndex++;
+if (currentQuestionIndex < questions.length) {
+loadQuestion();
+} else {
+showResults();
+}
+}
+
+function showResults() {
+quizContainer.classList.remove('active');
+resultsContainer.classList.add('active');
+finalScore.innerText = `${score} / ${questions.length}`;
+
+let message = "";
+const percentage = (score / questions.length) * 100;
+if (percentage === 100) {
+message = "Kitűnő! (Excellent!) You've mastered both A1 and A2 basics!";
+} else if (percentage >= 70) {
+message = "Jó munka! (Good job!) You have a solid grasp of Hungarian.";
+} else {
+message = "Keep practicing! Review basic and intermediate phrases and try again.";
+}
+scoreMessage.innerText = message;
+}
+
+function restartQuiz() {
+currentQuestionIndex = 0;
+score = 0;
+resultsContainer.classList.remove('active');
+quizContainer.classList.add('active');
+loadQuestion();
+}
+
+// Initialize quiz
+quizContainer.classList.add('active');
+loadQuestion();
+</script>
+</body>
+</html>
