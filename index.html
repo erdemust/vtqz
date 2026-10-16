@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hungarian A1 Vocabulary Quiz</title>
+    <style>
+        :root {
+            --primary-color: #d4380d;
+            --secondary-color: #fa8c16;
+            --background-color: #fcfefe;
+            --card-background: #ffffff;
+            --text-color: #262626;
+            --border-color: #d9d9d9;
+            --success-color: #52c41a;
+            --error-color: #ff4d4f;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-background);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #595959;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .quiz-section {
+            display: none;
+        }
+
+        .quiz-section.active {
+            display: block;
+        }
+
+        .question-number {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .option-item {
+            background-color: #fafafa;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 15px;
+        }
+
+        .option-item:hover {
+            background-color: #fff7e6;
+            border-color: var(--secondary-color);
+        }
+
+        .option-item.selected {
+            background-color: #ffe7ba;
+            border-color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .option-item.correct {
+            background-color: #f6ffed;
+            border-color: var(--success-color);
+            color: #389e0d;
+        }
+
+        .option-item.incorrect {
+            background-color: #fff1f0;
+            border-color: var(--error-color);
+            color: #cf1322;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #ad2102;
+        }
+
+        .btn:disabled {
+            background-color: #d9d9d9;
+            cursor: not-allowed;
+        }
+
+        .results-section {
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 20px 0;
+        }
+
+        .score-message {
+            font-size: 18px;
+            margin-bottom: 25px;
+            color: #434343;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🇭🇺 Hungarian A1 Vocabulary Quiz</h1>
+        <p class="subtitle">Test your foundational Hungarian words and phrases!</p>
+
+        <!-- Quiz Container -->
+        <div id="quiz-container">
+            <div id="question-container"></div>
+            <button id="next-btn" class="btn" onclick="nextQuestion()" disabled>Next Question</button>
+        </div>
+
+        <!-- Results Container -->
+        <div id="results-container" class="quiz-section results-section">
+            <h2>Quiz Complete!</h2>
+            <div class="score-display" id="final-score">0/10</div>
+            <p class="score-message" id="score-message">Great job practicing your Hungarian!</p>
+            <button class="btn" onclick="restartQuiz()">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "What does 'Jó napot!' mean in English?",
+                options: ["Good morning!", "Good afternoon / Hello!", "Good night!", "Goodbye!"],
+                answer: 1
+            },
+            {
+                question: "How do you say 'Thank you' in Hungarian?",
+                options: ["Kérem", "Viszontlátásra", "Köszönöm", "Elnézést"],
+                answer: 2
+            },
+            {
+                question: "What is the Hungarian word for 'Water'?",
+                options: ["Tej", "Bor", "Sör", "Víz"],
+                answer: 3
+            },
+            {
+                question: "Translate 'Igen' into English:",
+                options: ["No", "Please", "Yes", "Maybe"],
+                answer: 2
+            },
+            {
+                question: "What does 'Kérem' mean?",
+                options: ["Please / You're welcome", "Hello", "Thank you", "Goodbye"],
+                answer: 0
+            },
+            {
+                question: "What is the number 'egy' in English?",
+                options: ["Two", "Ten", "One", "Five"],
+                answer: 2
+            },
+            {
+                question: "What does 'Viszontlátásra' mean?",
+                options: ["Good morning", "Goodbye (formal)", "Excuse me", "How are you?"],
+                answer: 1
+            },
+            {
+                question: "What is the Hungarian word for 'Bread'?",
+                options: ["Hús", "Sajt", "Alma", "Kenyér"],
+                answer: 3
+            },
+            {
+                question: "Translate 'Nem' into English:",
+                options: ["Yes", "No", "Not", "Never"],
+                answer: 1
+            },
+            {
+                question: "What does 'Beszél angolul?' mean?",
+                options: ["Do you speak English?", "Where is English?", "I speak English", "Who are you?"],
+                answer: 0
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+        let isAnswered = false;
+
+        const questionContainer = document.getElementById('question-container');
+        const nextBtn = document.getElementById('next-btn');
+        const quizContainer = document.getElementById('quiz-container');
+        const resultsContainer = document.getElementById('results-container');
+        const finalScore = document.getElementById('final-score');
+        const scoreMessage = document.getElementById('score-message');
+
+        function loadQuestion() {
+            isAnswered = false;
+            selectedOption = null;
+            nextBtn.disabled = true;
+
+            const currentQ = questions[currentQuestionIndex];
+
+            questionContainer.innerHTML = `
+                <div class="question-number">Question ${currentQuestionIndex + 1} of ${questions.length}</div>
+                <div class="question-text">${currentQ.question}</div>
+                <ul class="options-list">
+                    ${currentQ.options.map((option, index) => `
+                        <li class="option-item" onclick="selectOption(this, ${index})">${option}</li>
+                    `).join('')}
+                </ul>
+            `;
+        }
+
+        function selectOption(element, index) {
+            if (isAnswered) return;
+
+            // Remove selected class from all options
+            document.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            selectedOption = index;
+            nextBtn.disabled = false;
+
+            // Immediately check answer
+            isAnswered = true;
+            const currentQ = questions[currentQuestionIndex];
+            const optionItems = document.querySelectorAll('.option-item');
+
+            if (selectedOption === currentQ.answer) {
+                element.classList.add('correct');
+                score++;
+            } else {
+                element.classList.add('incorrect');
+                optionItems[currentQ.answer].classList.add('correct');
+            }
+
+            // Change button text on final question
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.innerText = "View Results";
+            } else {
+                nextBtn.innerText = "Next Question";
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizContainer.classList.remove('active');
+            resultsContainer.classList.add('active');
+            finalScore.innerText = `${score} / ${questions.length}`;
+
+            let message = "";
+            const percentage = (score / questions.length) * 100;
+            if (percentage === 100) {
+                message = "Kitűnő! (Excellent!) You've mastered your A1 basics!";
+            } else if (percentage >= 70) {
+                message = "Jó munka! (Good job!) You have a solid grasp of the basics.";
+            } else {
+                message = "Keep practicing! Review basic Hungarian phrases and try again.";
+            }
+            scoreMessage.innerText = message;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            resultsContainer.classList.remove('active');
+            quizContainer.classList.add('active');
+            loadQuestion();
+        }
+
+        // Initialize quiz
+        quizContainer.classList.add('active');
+        loadQuestion();
+    </script>
+</body>
+</html>
