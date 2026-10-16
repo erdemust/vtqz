@@ -1,334 +1,586 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hungarian A1 Vocabulary Quiz</title>
+    <title>Hungarian A1 & A2 Vocabulary Quiz</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        hungarian: {
+                            red: '#D02F3A',
+                            green: '#2D8259',
+                            gold: '#F59E0B'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #d4380d;
-            --secondary-color: #fa8c16;
-            --background-color: #fcfefe;
-            --card-background: #ffffff;
-            --text-color: #262626;
-            --border-color: #d9d9d9;
-            --success-color: #52c41a;
-            --error-color: #ff4d4f;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
         }
-
-        .container {
-            background-color: var(--card-background);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            width: 100%;
-            max-width: 600px;
-            padding: 30px;
-            box-sizing: border-box;
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.03); }
         }
-
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-top: 0;
-            font-size: 24px;
-        }
-
-        p.subtitle {
-            text-align: center;
-            color: #595959;
-            margin-bottom: 25px;
-            font-size: 14px;
-        }
-
-        .quiz-section {
-            display: none;
-        }
-
-        .quiz-section.active {
-            display: block;
-        }
-
-        .question-number {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--secondary-color);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
-        }
-
-        .question-text {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        .options-list {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 20px 0;
-        }
-
-        .option-item {
-            background-color: #fafafa;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 15px;
-        }
-
-        .option-item:hover {
-            background-color: #fff7e6;
-            border-color: var(--secondary-color);
-        }
-
-        .option-item.selected {
-            background-color: #ffe7ba;
-            border-color: var(--primary-color);
-            font-weight: 500;
-        }
-
-        .option-item.correct {
-            background-color: #f6ffed;
-            border-color: var(--success-color);
-            color: #389e0d;
-        }
-
-        .option-item.incorrect {
-            background-color: #fff1f0;
-            border-color: var(--error-color);
-            color: #cf1322;
-        }
-
-        .btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 20px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: background-color 0.2s;
-        }
-
-        .btn:hover {
-            background-color: #ad2102;
-        }
-
-        .btn:disabled {
-            background-color: #d9d9d9;
-            cursor: not-allowed;
-        }
-
-        .results-section {
-            text-align: center;
-        }
-
-        .score-display {
-            font-size: 48px;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin: 20px 0;
-        }
-
-        .score-message {
-            font-size: 18px;
-            margin-bottom: 25px;
-            color: #434343;
+        .timer-warning {
+            animation: pulse-fast 0.6s infinite;
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col items-center justify-center p-4 sm:p-6">
 
-    <div class="container">
-        <h1>🇭🇺 Hungarian A1 Vocabulary Quiz</h1>
-        <p class="subtitle">Test your foundational Hungarian words and phrases!</p>
+    <!-- Main Container Card -->
+    <div class="w-full max-w-2xl bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto">
+        
+        <!-- Top Navigation / Stats Bar -->
+        <header class="bg-gray-900/80 backdrop-blur-md border-b border-gray-800 p-4 sm:px-6 flex justify-between items-center text-sm">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">🇭🇺</span>
+                <span class="font-bold text-gray-200 tracking-wide text-base">MagyarQuiz</span>
+                <span id="level-badge" class="ml-2 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-hungarian-red/20 text-red-400 border border-hungarian-red/30">A1 & A2</span>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <!-- High Score Badge -->
+                <div class="flex items-center space-x-1.5 bg-gray-800/80 px-3 py-1.5 rounded-lg border border-gray-700/60" title="Best Score">
+                    <span class="text-amber-400">🏆</span>
+                    <span class="text-xs text-gray-400 font-medium hidden sm:inline">Best:</span>
+                    <span id="top-score-display" class="font-bold text-amber-400">0/40</span>
+                </div>
+                <!-- Max Streak Badge -->
+                <div class="flex items-center space-x-1.5 bg-gray-800/80 px-3 py-1.5 rounded-lg border border-gray-700/60" title="Highest Streak">
+                    <span class="text-orange-500">🔥</span>
+                    <span class="text-xs text-gray-400 font-medium hidden sm:inline">Streak:</span>
+                    <span id="top-streak-display" class="font-bold text-orange-400">0</span>
+                </div>
+            </div>
+        </header>
 
-        <!-- Quiz Container -->
-        <div id="quiz-container">
-            <div id="question-container"></div>
-            <button id="next-btn" class="btn" onclick="nextQuestion()" disabled>Next Question</button>
-        </div>
+        <!-- Main Body Content Section -->
+        <main class="p-5 sm:p-8 flex-1 flex flex-col justify-center">
 
-        <!-- Results Container -->
-        <div id="results-container" class="quiz-section results-section">
-            <h2>Quiz Complete!</h2>
-            <div class="score-display" id="final-score">0/10</div>
-            <p class="score-message" id="score-message">Great job practicing your Hungarian!</p>
-            <button class="btn" onclick="restartQuiz()">Try Again</button>
-        </div>
+            <!-- 1. START SCREEN -->
+            <section id="start-screen" class="flex flex-col items-center text-center py-6 space-y-6">
+                <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-hungarian-red to-hungarian-green flex items-center justify-center text-4xl shadow-lg shadow-red-900/20 mb-2">
+                    📚
+                </div>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">Hungarian Vocabulary Quiz</h1>
+                    <p class="text-gray-400 text-sm sm:text-base max-w-md">
+                        Challenge yourself with 40 curated A1 & A2 Hungarian vocabulary questions! 
+                    </p>
+                </div>
+
+                <!-- Rules Grid -->
+                <div class="grid grid-cols-2 gap-3 w-full max-w-md my-2 text-left">
+                    <div class="bg-gray-800/50 p-3.5 rounded-xl border border-gray-800 flex items-center space-x-3">
+                        <span class="text-xl">⏱️</span>
+                        <div>
+                            <div class="text-xs text-gray-400">Time Limit</div>
+                            <div class="text-sm font-semibold text-gray-200">20s / Question</div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800/50 p-3.5 rounded-xl border border-gray-800 flex items-center space-x-3">
+                        <span class="text-xl">🎯</span>
+                        <div>
+                            <div class="text-xs text-gray-400">Questions</div>
+                            <div class="text-sm font-semibold text-gray-200">40 Questions</div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800/50 p-3.5 rounded-xl border border-gray-800 flex items-center space-x-3">
+                        <span class="text-xl">🔄</span>
+                        <div>
+                            <div class="text-xs text-gray-400">Format</div>
+                            <div class="text-sm font-semibold text-gray-200">HU ↔️ EN Translation</div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800/50 p-3.5 rounded-xl border border-gray-800 flex items-center space-x-3">
+                        <span class="text-xl">🔥</span>
+                        <div>
+                            <div class="text-xs text-gray-400">Streak</div>
+                            <div class="text-sm font-semibold text-gray-200">Continuous Tracking</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="start-btn" onclick="startQuiz()" class="w-full max-w-md py-3.5 px-6 bg-gradient-to-r from-red-600 to-emerald-600 hover:from-red-500 hover:to-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-red-900/30 transition transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                    Start Quiz
+                </button>
+            </section>
+
+            <!-- 2. QUIZ ACTIVE SCREEN -->
+            <section id="quiz-screen" class="hidden space-y-6">
+                <!-- Progress Header -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center text-xs sm:text-sm font-medium text-gray-400">
+                        <span id="question-count-text">Question 1 of 40</span>
+                        <div id="streak-counter" class="text-orange-400 font-semibold flex items-center gap-1 hidden">
+                            🔥 Current Streak: <span id="current-streak-val">0</span>
+                        </div>
+                    </div>
+                    <!-- Visual Progress Bar -->
+                    <div class="w-full h-2.5 bg-gray-800 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-gradient-to-r from-hungarian-red via-amber-500 to-hungarian-green transition-all duration-300 rounded-full w-0"></div>
+                    </div>
+                </div>
+
+                <!-- Question Header with Timer -->
+                <div class="bg-gray-800/40 p-5 rounded-xl border border-gray-800 flex justify-between items-start gap-4">
+                    <div class="space-y-1 flex-1">
+                        <span id="category-tag" class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/50 px-2 py-0.5 rounded">
+                            A1 Beginner
+                        </span>
+                        <h2 id="question-text" class="text-lg sm:text-xl font-semibold text-white leading-snug pt-1">
+                            Loading question...
+                        </h2>
+                    </div>
+                    <!-- Countdown Timer -->
+                    <div id="timer-box" class="flex flex-col items-center justify-center bg-gray-800 border border-gray-700 px-3 py-2 rounded-xl min-w-[60px] transition-colors">
+                        <span class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Time</span>
+                        <span id="timer-text" class="text-lg font-extrabold text-amber-400 leading-none">20</span>
+                    </div>
+                </div>
+
+                <!-- Answer Options Container -->
+                <div id="options-container" class="grid grid-cols-1 gap-3">
+                    <!-- Option buttons dynamically generated by JavaScript -->
+                </div>
+
+                <!-- Feedback Banner -->
+                <div id="feedback-banner" class="min-h-[48px] p-3 rounded-xl text-sm font-medium flex items-center justify-between opacity-0 transition-opacity duration-200">
+                    <span id="feedback-text"></span>
+                </div>
+
+                <!-- Next / Submit Button -->
+                <button id="next-btn" onclick="handleNextButtonClick()" disabled class="w-full py-3.5 px-6 bg-emerald-600 hover:bg-emerald-500 disabled:bg-gray-800 disabled:text-gray-600 disabled:cursor-not-allowed text-white font-bold rounded-xl transition focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                    Select an Answer
+                </button>
+            </section>
+
+            <!-- 3. RESULTS SUMMARY SCREEN -->
+            <section id="results-screen" class="hidden flex flex-col items-center text-center space-y-6 py-4">
+                <div class="text-5xl my-1">🎉</div>
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Quiz Completed!</h2>
+                    <p id="score-subtitle" class="text-gray-400 text-sm mt-1">Great effort on practicing your Hungarian vocabulary.</p>
+                </div>
+
+                <!-- Main Score Badge -->
+                <div class="bg-gray-800/60 border border-gray-800 rounded-2xl p-6 w-full max-w-sm flex flex-col items-center">
+                    <span class="text-xs uppercase tracking-widest text-gray-400 font-semibold mb-1">Final Score</span>
+                    <div id="final-score-text" class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-emerald-400 my-1">
+                        0 / 40
+                    </div>
+                    <div id="accuracy-text" class="text-sm font-medium text-emerald-400 bg-emerald-950/50 px-3 py-1 rounded-full border border-emerald-800/40 mt-2">
+                        Accuracy: 0%
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-2 gap-3 w-full max-w-sm">
+                    <div class="bg-gray-800/40 border border-gray-800 p-4 rounded-xl flex flex-col items-center">
+                        <span class="text-gray-400 text-xs">Highest Streak</span>
+                        <span id="session-max-streak" class="text-xl font-bold text-orange-400 mt-1">0</span>
+                    </div>
+                    <div class="bg-gray-800/40 border border-gray-800 p-4 rounded-xl flex flex-col items-center">
+                        <span class="text-gray-400 text-xs">Personal Best</span>
+                        <span id="session-best-score" class="text-xl font-bold text-amber-400 mt-1">0 / 40</span>
+                    </div>
+                </div>
+
+                <!-- Encouragement Message -->
+                <p id="feedback-eval-message" class="text-sm text-gray-300 max-w-md bg-gray-800/30 p-4 rounded-xl border border-gray-800/60 italic">
+                    Loading result feedback...
+                </p>
+
+                <!-- Retry / Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3 w-full max-w-sm">
+                    <button onclick="restartQuiz()" class="flex-1 py-3.5 px-6 bg-gradient-to-r from-red-600 to-emerald-600 hover:from-red-500 hover:to-emerald-500 text-white font-bold rounded-xl shadow-lg transition focus:outline-none">
+                        Try Again 🔄
+                    </button>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900/60 border-t border-gray-800/60 py-3 text-center text-xs text-gray-500">
+            Hungarian Vocabulary Trainer • A1 & A2 Level
+        </footer>
     </div>
 
+    <!-- JavaScript Logic -->
     <script>
-        const questions = [
-            {
-                question: "What does 'Jó napot!' mean in English?",
-                options: ["Good morning!", "Good afternoon / Hello!", "Good night!", "Goodbye!"],
-                answer: 1
-            },
-            {
-                question: "How do you say 'Thank you' in Hungarian?",
-                options: ["Kérem", "Viszontlátásra", "Köszönöm", "Elnézést"],
-                answer: 2
-            },
-            {
-                question: "What is the Hungarian word for 'Water'?",
-                options: ["Tej", "Bor", "Sör", "Víz"],
-                answer: 3
-            },
-            {
-                question: "Translate 'Igen' into English:",
-                options: ["No", "Please", "Yes", "Maybe"],
-                answer: 2
-            },
-            {
-                question: "What does 'Kérem' mean?",
-                options: ["Please / You're welcome", "Hello", "Thank you", "Goodbye"],
-                answer: 0
-            },
-            {
-                question: "What is the number 'egy' in English?",
-                options: ["Two", "Ten", "One", "Five"],
-                answer: 2
-            },
-            {
-                question: "What does 'Viszontlátásra' mean?",
-                options: ["Good morning", "Goodbye (formal)", "Excuse me", "How are you?"],
-                answer: 1
-            },
-            {
-                question: "What is the Hungarian word for 'Bread'?",
-                options: ["Hús", "Sajt", "Alma", "Kenyér"],
-                answer: 3
-            },
-            {
-                question: "Translate 'Nem' into English:",
-                options: ["Yes", "No", "Not", "Never"],
-                answer: 1
-            },
-            {
-                question: "What does 'Beszél angolul?' mean?",
-                options: ["Do you speak English?", "Where is English?", "I speak English", "Who are you?"],
-                answer: 0
-            }
+        // Full Question Bank (40 Curated Hungarian A1/A2 Vocabulary Items)
+        const questionsRaw = [
+            // --- A1 Level Questions (1 - 20) ---
+            { level: "A1", question: "Translate into English: 'Jó napot!'", correctAnswer: "Good afternoon / Hello", options: ["Good morning!", "Good afternoon / Hello", "Good night!", "Goodbye!"] },
+            { level: "A1", question: "Translate into Hungarian: 'Thank you'", correctAnswer: "Köszönöm", options: ["Kérem", "Viszontlátásra", "Köszönöm", "Elnézést"] },
+            { level: "A1", question: "Translate into English: 'Víz'", correctAnswer: "Water", options: ["Milk", "Wine", "Beer", "Water"] },
+            { level: "A1", question: "Translate into English: 'Igen'", correctAnswer: "Yes", options: ["No", "Please", "Yes", "Maybe"] },
+            { level: "A1", question: "Translate into English: 'Kérem'", correctAnswer: "Please / You're welcome", options: ["Please / You're welcome", "Hello", "Thank you", "Goodbye"] },
+            { level: "A1", question: "Translate into English: 'Egy'", correctAnswer: "One", options: ["Two", "Ten", "One", "Five"] },
+            { level: "A1", question: "Translate into English: 'Viszontlátásra'", correctAnswer: "Goodbye (formal)", options: ["Good morning", "Goodbye (formal)", "Excuse me", "How are you?"] },
+            { level: "A1", question: "Translate into Hungarian: 'Bread'", correctAnswer: "Kenyér", options: ["Hús", "Sajt", "Alma", "Kenyér"] },
+            { level: "A1", question: "Translate into English: 'Nem'", correctAnswer: "No", options: ["Yes", "No", "Not", "Never"] },
+            { level: "A1", question: "Translate into English: 'Beszél angolul?'", correctAnswer: "Do you speak English?", options: ["Do you speak English?", "Where is English?", "I speak English", "Who are you?"] },
+            { level: "A1", question: "Translate into Hungarian: 'Good morning'", correctAnswer: "Jó reggelt", options: ["Jó reggelt", "Jó napot", "Jó éjszakát", "Viszontlátásra"] },
+            { level: "A1", question: "Translate into Hungarian: 'Milk'", correctAnswer: "Tej", options: ["Víz", "Bor", "Tej", "Sör"] },
+            { level: "A1", question: "Translate into Hungarian: 'Beer'", correctAnswer: "Sör", options: ["Tej", "Víz", "Sör", "Bor"] },
+            { level: "A1", question: "Translate into English: 'Jó éjszakát!'", correctAnswer: "Good night", options: ["Good morning", "Good afternoon", "Good night", "Goodbye"] },
+            { level: "A1", question: "Translate into English: 'Szia'", correctAnswer: "Hello / Hi / Bye", options: ["Hello / Hi / Bye", "Good morning", "Excuse me", "Please"] },
+            { level: "A1", question: "Translate into Hungarian: 'Apple'", correctAnswer: "Alma", options: ["Kenyér", "Alma", "Sajt", "Hús"] },
+            { level: "A1", question: "Translate into Hungarian: 'Meat'", correctAnswer: "Hús", options: ["Sajt", "Alma", "Hús", "Kenyér"] },
+            { level: "A1", question: "Translate into Hungarian: 'Cheese'", correctAnswer: "Sajt", options: ["Hús", "Alma", "Sajt", "Kenyér"] },
+            { level: "A1", question: "Translate into English: 'Elnézést'", correctAnswer: "Excuse me / Sorry", options: ["Please", "Thank you", "Excuse me / Sorry", "Goodbye"] },
+            { level: "A1", question: "Translate into English: 'Hogy van?'", correctAnswer: "How are you? (formal)", options: ["How are you? (formal)", "Where are you?", "Who are you?", "What is this?"] },
+
+            // --- A2 Level Questions (21 - 40) ---
+            { level: "A2", question: "Translate into English: 'Hol van a vasútállomás?'", correctAnswer: "Where is the railway station?", options: ["Where is the railway station?", "Where is the airport?", "Where is the hotel?", "Where is the restaurant?"] },
+            { level: "A2", question: "Translate into Hungarian: 'I would like' (polite form)", correctAnswer: "Szeretnék", options: ["Köszönöm", "Szeretnék", "Tudom", "Kérem"] },
+            { level: "A2", question: "Translate into English: 'Mennyibe kerül?'", correctAnswer: "How much does it cost?", options: ["What time is it?", "How much does it cost?", "Where is it?", "Do you have it?"] },
+            { level: "A2", question: "Translate into Hungarian: 'Ticket'", correctAnswer: "Jegy", options: ["Menetrend", "Jegy", "Állomás", "Utca"] },
+            { level: "A2", question: "Translate into English: 'Fáradt vagyok'", correctAnswer: "I am tired", options: ["I am happy", "I am hungry", "I am tired", "I am thirsty"] },
+            { level: "A2", question: "Translate into Hungarian: 'Yesterday'", correctAnswer: "Tegnap", options: ["Holnap", "Ma", "Tegnap", "Mindig"] },
+            { level: "A2", question: "Translate into Hungarian: 'Tomorrow'", correctAnswer: "Holnap", options: ["Tegnap", "Ma", "Holnap", "Soha"] },
+            { level: "A2", question: "Translate into English: 'Merre van a mosdó?'", correctAnswer: "Where is the restroom?", options: ["Where is the exit?", "Where is the restroom?", "Where is the entrance?", "Where is the shop?"] },
+            { level: "A2", question: "Translate into Hungarian: 'Expensive'", correctAnswer: "Drága", options: ["Olcsó", "Drága", "Jó", "Rossz"] },
+            { level: "A2", question: "Translate into Hungarian: 'Cheap'", correctAnswer: "Olcsó", options: ["Drága", "Olcsó", "Nagy", "Kicsi"] },
+            { level: "A2", question: "Translate into English: 'Nem értem'", correctAnswer: "I don't understand", options: ["I don't know", "I don't understand", "I don't speak", "I don't want"] },
+            { level: "A2", question: "Translate into Hungarian: 'Weather'", correctAnswer: "Időjárás", options: ["Időjárás", "Nap", "Eső", "Szél"] },
+            { level: "A2", question: "Translate into English: 'Bocsánat, késem'", correctAnswer: "Sorry, I am late", options: ["Sorry, I am early", "Sorry, I am late", "Excuse me, where are you?", "Pardon me"] },
+            { level: "A2", question: "Translate into Hungarian: 'Hospital'", correctAnswer: "Kórház", options: ["Iskola", "Gyógyszertár", "Kórház", "Bank"] },
+            { level: "A2", question: "Translate into English: 'A számlát kérem'", correctAnswer: "The bill, please", options: ["The menu, please", "The bill, please", "Water, please", "Bread, please"] },
+            { level: "A2", question: "Translate into Hungarian: 'Airport'", correctAnswer: "Repülőtér", options: ["Vasútállomás", "Repülőtér", "Autópálya", "Buszmegálló"] },
+            { level: "A2", question: "Translate into English: 'Merre lakik?'", correctAnswer: "Where do you live? (formal)", options: ["Where do you live? (formal)", "Where are you going?", "Where were you born?", "Where is your family?"] },
+            { level: "A2", question: "Translate into Hungarian: 'Doctor'", correctAnswer: "Orvos", options: ["Tanár", "Orvos", "Rendőr", "Mérnök"] },
+            { level: "A2", question: "Translate into English: 'Esik az eső'", correctAnswer: "It is raining", options: ["It is snowing", "It is sunny", "It is raining", "It is windy"] },
+            { level: "A2", question: "Translate into Hungarian: 'Always'", correctAnswer: "Mindig", options: ["Soha", "Mindig", "Gyakran", "Ritkán"] }
         ];
 
+        // Quiz State Variables
         let currentQuestionIndex = 0;
         let score = 0;
-        let selectedOption = null;
+        let currentStreak = 0;
+        let maxStreakInSession = 0;
         let isAnswered = false;
+        let activeQuestions = [];
+        let timerInterval = null;
+        let timeLeft = 20;
+        const QUESTION_TIME_LIMIT = 20;
 
-        const questionContainer = document.getElementById('question-container');
+        // DOM Elements Reference
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+
+        const topScoreDisplay = document.getElementById('top-score-display');
+        const topStreakDisplay = document.getElementById('top-streak-display');
+
+        const progressBar = document.getElementById('progress-bar');
+        const questionCountText = document.getElementById('question-count-text');
+        const streakCounter = document.getElementById('streak-counter');
+        const currentStreakVal = document.getElementById('current-streak-val');
+
+        const categoryTag = document.getElementById('category-tag');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+
+        const timerBox = document.getElementById('timer-box');
+        const timerText = document.getElementById('timer-text');
+
+        const feedbackBanner = document.getElementById('feedback-banner');
+        const feedbackText = document.getElementById('feedback-text');
         const nextBtn = document.getElementById('next-btn');
-        const quizContainer = document.getElementById('quiz-container');
-        const resultsContainer = document.getElementById('results-container');
-        const finalScore = document.getElementById('final-score');
-        const scoreMessage = document.getElementById('score-message');
 
+        // Local Storage Utilities
+        function getLocalStorageData() {
+            const savedScore = localStorage.getItem('hungarian_quiz_best_score');
+            const savedStreak = localStorage.getItem('hungarian_quiz_max_streak');
+            return {
+                bestScore: savedScore !== null ? parseInt(savedScore, 10) : 0,
+                maxStreak: savedStreak !== null ? parseInt(savedStreak, 10) : 0
+            };
+        }
+
+        function updateHeaderBadges() {
+            const data = getLocalStorageData();
+            topScoreDisplay.innerText = `${data.bestScore}/${questionsRaw.length}`;
+            topStreakDisplay.innerText = `${data.maxStreak}`;
+        }
+
+        function savePerformance(finalScore, maxStreak) {
+            const currentData = getLocalStorageData();
+            if (finalScore > currentData.bestScore) {
+                localStorage.setItem('hungarian_quiz_best_score', finalScore);
+            }
+            if (maxStreak > currentData.maxStreak) {
+                localStorage.setItem('hungarian_quiz_max_streak', maxStreak);
+            }
+            updateHeaderBadges();
+        }
+
+        // Shuffle Array Helper (Fisher-Yates)
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Prepare Questions with Shuffled Options
+        function prepareQuestions() {
+            activeQuestions = questionsRaw.map((q) => ({
+                ...q,
+                shuffledOptions: shuffleArray(q.options)
+            }));
+        }
+
+        // Start Timer Logic
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = QUESTION_TIME_LIMIT;
+            timerText.innerText = timeLeft;
+            
+            // Reset visual warnings
+            timerBox.className = "flex flex-col items-center justify-center bg-gray-800 border border-gray-700 px-3 py-2 rounded-xl min-w-[60px] transition-colors";
+            timerText.className = "text-lg font-extrabold text-amber-400 leading-none";
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerText.innerText = timeLeft;
+
+                // Warning threshold when time <= 5 seconds
+                if (timeLeft <= 5 && timeLeft > 0) {
+                    timerBox.className = "flex flex-col items-center justify-center bg-red-950/80 border border-red-600 px-3 py-2 rounded-xl min-w-[60px] timer-warning transition-colors";
+                    timerText.className = "text-lg font-extrabold text-red-400 leading-none";
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        // Handle Time Expiration
+        function handleTimeout() {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            currentStreak = 0;
+            updateStreakUI();
+
+            const currentQ = activeQuestions[currentQuestionIndex];
+            const buttons = optionsContainer.querySelectorAll('button');
+
+            buttons.forEach((btn) => {
+                btn.disabled = true;
+                const optionVal = btn.getAttribute('data-value');
+                if (optionVal.toLowerCase() === currentQ.correctAnswer.toLowerCase()) {
+                    btn.className = "w-full text-left p-4 rounded-xl border font-medium text-sm sm:text-base transition bg-emerald-950/60 border-emerald-500 text-emerald-300 flex justify-between items-center";
+                    btn.innerHTML += `<span>✓</span>`;
+                } else {
+                    btn.className = "w-full text-left p-4 rounded-xl border font-medium text-sm sm:text-base transition bg-gray-800/40 border-gray-800 text-gray-500 opacity-60";
+                }
+            });
+
+            // Show timeout feedback
+            feedbackBanner.className = "p-3 rounded-xl text-sm font-medium flex items-center justify-between opacity-100 bg-red-950/50 border border-red-800/50 text-red-300";
+            feedbackText.innerHTML = `⏰ <strong>Time's up!</strong> Correct answer: <em>${currentQ.correctAnswer}</em>`;
+
+            nextBtn.disabled = false;
+            nextBtn.innerText = currentQuestionIndex === activeQuestions.length - 1 ? 'View Final Results' : 'Next Question';
+        }
+
+        // Load Question UI
         function loadQuestion() {
             isAnswered = false;
-            selectedOption = null;
             nextBtn.disabled = true;
+            nextBtn.innerText = "Select an Answer";
 
-            const currentQ = questions[currentQuestionIndex];
+            const currentQ = activeQuestions[currentQuestionIndex];
 
-            questionContainer.innerHTML = `
-                <div class="question-number">Question ${currentQuestionIndex + 1} of ${questions.length}</div>
-                <div class="question-text">${currentQ.question}</div>
-                <ul class="options-list">
-                    ${currentQ.options.map((option, index) => `
-                        <li class="option-item" onclick="selectOption(this, ${index})">${option}</li>
-                    `).join('')}
-                </ul>
-            `;
+            // Progress Bar & Count Text
+            const progressPct = ((currentQuestionIndex) / activeQuestions.length) * 100;
+            progressBar.style.width = `${progressPct}%`;
+            questionCountText.innerText = `Question ${currentQuestionIndex + 1} of ${activeQuestions.length}`;
+
+            // Category & Question Text
+            categoryTag.innerText = currentQ.level === "A1" ? "A1 • Beginner" : "A2 • Intermediate";
+            categoryTag.className = currentQ.level === "A1" 
+                ? "text-[11px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/50 px-2 py-0.5 rounded"
+                : "text-[11px] font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 border border-amber-800/50 px-2 py-0.5 rounded";
+
+            questionText.innerText = currentQ.question;
+
+            // Reset feedback banner
+            feedbackBanner.className = "min-h-[48px] p-3 rounded-xl text-sm font-medium flex items-center justify-between opacity-0 transition-opacity duration-200";
+            feedbackText.innerText = "";
+
+            // Render Answer Option Buttons
+            optionsContainer.innerHTML = currentQ.shuffledOptions.map((opt, idx) => `
+                <button
+                    type="button"
+                    onclick="selectAnswer(${idx})"
+                    data-value="${opt}"
+                    class="option-btn w-full text-left p-4 rounded-xl border border-gray-800 bg-gray-800/60 hover:bg-gray-800 hover:border-gray-700 text-gray-200 font-medium text-sm sm:text-base transition focus:outline-none focus:ring-2 focus:ring-emerald-500/50 flex justify-between items-center group">
+                    <span class="flex items-center gap-3">
+                        <span class="w-6 h-6 rounded-lg bg-gray-700/50 border border-gray-600/40 text-gray-300 text-xs flex items-center justify-center font-bold group-hover:border-emerald-500/50 group-hover:text-emerald-400">
+                            ${String.fromCharCode(65 + idx)}
+                        </span>
+                        <span>${opt}</span>
+                    </span>
+                </button>
+            `).join('');
+
+            startTimer();
         }
 
-        function selectOption(element, index) {
+        // Handle User Option Selection
+        function selectAnswer(selectedIndex) {
             if (isAnswered) return;
-
-            // Remove selected class from all options
-            document.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
-            
-            // Add selected class to clicked option
-            element.classList.add('selected');
-            selectedOption = index;
-            nextBtn.disabled = false;
-
-            // Immediately check answer
             isAnswered = true;
-            const currentQ = questions[currentQuestionIndex];
-            const optionItems = document.querySelectorAll('.option-item');
+            clearInterval(timerInterval);
 
-            if (selectedOption === currentQ.answer) {
-                element.classList.add('correct');
+            const currentQ = activeQuestions[currentQuestionIndex];
+            const selectedOption = currentQ.shuffledOptions[selectedIndex];
+            const buttons = optionsContainer.querySelectorAll('.option-btn');
+
+            const isCorrect = selectedOption.toLowerCase() === currentQ.correctAnswer.toLowerCase();
+
+            if (isCorrect) {
                 score++;
+                currentStreak++;
+                if (currentStreak > maxStreakInSession) {
+                    maxStreakInSession = currentStreak;
+                }
+                updateStreakUI();
+
+                // Style buttons
+                buttons[selectedIndex].className = "w-full text-left p-4 rounded-xl border font-medium text-sm sm:text-base transition bg-emerald-950/70 border-emerald-500 text-emerald-200 flex justify-between items-center";
+                buttons[selectedIndex].innerHTML += `<span class="text-emerald-400 font-bold">✓</span>`;
+
+                feedbackBanner.className = "p-3 rounded-xl text-sm font-medium flex items-center justify-between opacity-100 bg-emerald-950/50 border border-emerald-800/50 text-emerald-300";
+                feedbackText.innerHTML = `🎉 <strong>Correct!</strong> Well done!`;
             } else {
-                element.classList.add('incorrect');
-                optionItems[currentQ.answer].classList.add('correct');
+                currentStreak = 0;
+                updateStreakUI();
+
+                // Style incorrect button & highlight correct button
+                buttons.forEach((btn) => {
+                    const optionVal = btn.getAttribute('data-value');
+                    if (optionVal.toLowerCase() === currentQ.correctAnswer.toLowerCase()) {
+                        btn.className = "w-full text-left p-4 rounded-xl border font-medium text-sm sm:text-base transition bg-emerald-950/50 border-emerald-600 text-emerald-300 flex justify-between items-center";
+                        btn.innerHTML += `<span class="text-emerald-400 font-bold">✓</span>`;
+                    } else if (optionVal.toLowerCase() === selectedOption.toLowerCase()) {
+                        btn.className = "w-full text-left p-4 rounded-xl border font-medium text-sm sm:text-base transition bg-red-950/70 border-red-500 text-red-200 flex justify-between items-center";
+                        btn.innerHTML += `<span class="text-red-400 font-bold">✗</span>`;
+                    } else {
+                        btn.className = "w-full text-left p-4 rounded-xl border font-medium text-sm sm:text-base transition bg-gray-800/30 border-gray-800 text-gray-500 opacity-60";
+                    }
+                    btn.disabled = true;
+                });
+
+                feedbackBanner.className = "p-3 rounded-xl text-sm font-medium flex items-center justify-between opacity-100 bg-red-950/50 border border-red-800/50 text-red-300";
+                feedbackText.innerHTML = `💡 <strong>Incorrect.</strong> Correct answer: <em>${currentQ.correctAnswer}</em>`;
             }
 
-            // Change button text on final question
-            if (currentQuestionIndex === questions.length - 1) {
-                nextBtn.innerText = "View Results";
+            // Disable all options
+            buttons.forEach(btn => btn.disabled = true);
+
+            nextBtn.disabled = false;
+            nextBtn.innerText = currentQuestionIndex === activeQuestions.length - 1 ? 'View Final Results' : 'Next Question';
+        }
+
+        function updateStreakUI() {
+            if (currentStreak > 1) {
+                streakCounter.classList.remove('hidden');
+                currentStreakVal.innerText = currentStreak;
             } else {
-                nextBtn.innerText = "Next Question";
+                streakCounter.classList.add('hidden');
             }
         }
 
-        function nextQuestion() {
+        function handleNextButtonClick() {
+            if (!isAnswered) return;
+
             currentQuestionIndex++;
-            if (currentQuestionIndex < questions.length) {
+            if (currentQuestionIndex < activeQuestions.length) {
                 loadQuestion();
             } else {
                 showResults();
             }
         }
 
+        // Show Results Screen
         function showResults() {
-            quizContainer.classList.remove('active');
-            resultsContainer.classList.add('active');
-            finalScore.innerText = `${score} / ${questions.length}`;
+            clearInterval(timerInterval);
 
-            let message = "";
-            const percentage = (score / questions.length) * 100;
-            if (percentage === 100) {
-                message = "Kitűnő! (Excellent!) You've mastered your A1 basics!";
-            } else if (percentage >= 70) {
-                message = "Jó munka! (Good job!) You have a solid grasp of the basics.";
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+
+            const accuracy = Math.round((score / activeQuestions.length) * 100);
+
+            document.getElementById('final-score-text').innerText = `${score} / ${activeQuestions.length}`;
+            document.getElementById('accuracy-text').innerText = `Accuracy: ${accuracy}%`;
+            document.getElementById('session-max-streak').innerText = `${maxStreakInSession}`;
+
+            savePerformance(score, maxStreakInSession);
+
+            const savedData = getLocalStorageData();
+            document.getElementById('session-best-score').innerText = `${savedData.bestScore} / ${activeQuestions.length}`;
+
+            // Evaluative Feedback Message
+            const evalMsg = document.getElementById('feedback-eval-message');
+            if (accuracy === 100) {
+                evalMsg.innerText = "Kitűnő! (Excellent!) You answered every single question correctly. You have mastered Hungarian A1 & A2 vocabulary!";
+            } else if (accuracy >= 80) {
+                evalMsg.innerText = "Nagyon jó! (Very good!) Excellent command of Hungarian words and expressions. Keep up the amazing work!";
+            } else if (accuracy >= 60) {
+                evalMsg.innerText = "Jó munka! (Good job!) You have a solid foundational knowledge of Hungarian vocabulary. A little more practice will make it perfect.";
             } else {
-                message = "Keep practicing! Review basic Hungarian phrases and try again.";
+                evalMsg.innerText = "Keep practicing! Hungarian vocabulary takes time and repetition. Review basic A1/A2 words and give it another attempt!";
             }
-            scoreMessage.innerText = message;
         }
 
-        function restartQuiz() {
+        // Start Quiz Flow
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+
             currentQuestionIndex = 0;
             score = 0;
-            resultsContainer.classList.remove('active');
-            quizContainer.classList.add('active');
+            currentStreak = 0;
+            maxStreakInSession = 0;
+
+            prepareQuestions();
+            updateStreakUI();
             loadQuestion();
         }
 
-        // Initialize quiz
-        quizContainer.classList.add('active');
-        loadQuestion();
+        // Restart Quiz
+        function restartQuiz() {
+            startQuiz();
+        }
+
+        // Initialize App on DOM Load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateHeaderBadges();
+        });
     </script>
 </body>
 </html>
